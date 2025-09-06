@@ -288,6 +288,87 @@
         opacity: 0.9;
         transform: translateY(-2px);
       }
+
+      .letter-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 2500;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .letter-overlay.show {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .envelope {
+        position: relative;
+        width: 280px;
+        height: 180px;
+      }
+
+      .envelope .flap {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #f5f5f5;
+        border: 2px solid #e5e5e5;
+        border-bottom: none;
+        transform-origin: top;
+        transition: transform 0.6s;
+        z-index: 2;
+      }
+
+      .envelope .body {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #f5f5f5;
+        border: 2px solid #e5e5e5;
+        z-index: 1;
+      }
+
+      .envelope .letter-content {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #ffffff;
+        padding: 20px;
+        box-sizing: border-box;
+        transform: translateY(100%);
+        transition: transform 0.6s 0.6s;
+        overflow: hidden;
+        z-index: 1;
+      }
+
+      .envelope.open .flap {
+        transform: rotateX(180deg);
+      }
+
+      .envelope.open .letter-content {
+        transform: translateY(0);
+      }
+
+      .letter-text {
+        font-size: 16px;
+        color: #333;
+        line-height: 1.5;
+      }
     </style>
   </head>
   <body>
@@ -348,6 +429,17 @@
           <div class="envelope-question">Awh.. Let's try again? PLEASEE .◕‿◕.</div>
           <div class="envelope-buttons">
             <button class="envelope-btn yes" onclick="tryAgain()">Again.. ?</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Letter Overlay -->
+      <div class="letter-overlay" id="letterOverlay">
+        <div class="envelope" id="letterEnvelope">
+          <div class="flap"></div>
+          <div class="body"></div>
+          <div class="letter-content">
+            <p id="letterText" class="letter-text"></p>
           </div>
         </div>
       </div>
@@ -419,6 +511,7 @@
         if (choice === "yes") {
           setTimeout(() => {
             closePopup();
+            openLetter();
           }, 500);
         } else {
           setTimeout(() => {
@@ -439,11 +532,38 @@
       function tryAgain() {
         // ปิด blessing popup
         document.getElementById("blessingPopup").classList.remove("show");
-        
+
         // รอสักครู่แล้วเปิด envelope popup ใหม่
         setTimeout(() => {
           document.getElementById("envelopePopup").classList.add("show");
         }, 300);
+      }
+
+      function openLetter() {
+        const overlay = document.getElementById("letterOverlay");
+        const envelope = document.getElementById("letterEnvelope");
+        overlay.classList.add("show");
+        setTimeout(() => {
+          envelope.classList.add("open");
+          typeLetterMessage(
+            "ขอบคุณที่ตอบรับของขวัญนะ ขอให้วันนี้เต็มไปด้วยรอยยิ้มและความรัก ❤"
+          );
+        }, 300);
+        overlay.addEventListener("click", () => overlay.classList.remove("show"));
+      }
+
+      function typeLetterMessage(message) {
+        const target = document.getElementById("letterText");
+        target.textContent = "";
+        let index = 0;
+        function type() {
+          if (index < message.length) {
+            target.textContent += message[index];
+            index++;
+            setTimeout(type, 80);
+          }
+        }
+        setTimeout(type, 900);
       }
     </script>
   </body>
