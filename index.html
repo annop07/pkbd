@@ -277,11 +277,11 @@
       }
 
       .envelope-btn.yes {
-        background: #28a745; /* เขียวเข้ม */
+        background: #28a745;
         color: white;
       }
       .envelope-btn.no {
-        background: #dc3545; /* แดงเข้ม */
+        background: #dc3545;
         color: white;
       }
       .envelope-btn:hover {
@@ -339,16 +339,15 @@
         </div>
       </div>
 
-      <!-- Blessing Popup -->
+      <!-- Blessing Popup (UPDATED) -->
       <div class="envelope-popup" id="blessingPopup">
         <div class="envelope-card">
           <div class="envelope-icon">
-            <img src="photo/cute.png" alt="cute" />
+            <img src="photo/tkthao219-bubududu.gif" alt="cute" />
           </div>
-          <div class="envelope-question">Even if you said no 💔</div>
-          <p class="envelope-subtext">I still wish you endless happiness 🎂✨</p>
+          <div class="envelope-question">Awh.. Let's try again? PLEASEE .◕‿◕.</div>
           <div class="envelope-buttons">
-            <button class="envelope-btn yes" onclick="closeBlessing()">Thanks 💕</button>
+            <button class="envelope-btn yes" onclick="tryAgain()">Again.. ?</button>
           </div>
         </div>
       </div>
@@ -434,6 +433,17 @@
 
       function closeBlessing() {
         document.getElementById("blessingPopup").classList.remove("show");
+      }
+
+      // NEW FUNCTION: กลับไปถามใหม่
+      function tryAgain() {
+        // ปิด blessing popup
+        document.getElementById("blessingPopup").classList.remove("show");
+        
+        // รอสักครู่แล้วเปิด envelope popup ใหม่
+        setTimeout(() => {
+          document.getElementById("envelopePopup").classList.add("show");
+        }, 300);
       }
     </script>
   </body>
