@@ -736,31 +736,117 @@
         opacity: 1;
         transform: translateY(0);
       }
+      /* ข้อความใต้กล่อง 🎁 */
+      /* ข้อความใต้กล่อง 🎁 แบบมินิมอล */
       .click-text {
-        color: #fff;
-        font-size: 22px;
-        font-weight: 700;
-        margin-top: 12px;
-        margin-bottom: 18px;
-        text-shadow: 0 0 8px rgba(255, 255, 255, 0.8),
-          0 0 15px rgba(255, 215, 0, 0.9);
-        animation: pulse 1.5s infinite;
+        color: #ff9fcf; /* ชมพูพาสเทลนุ่ม ๆ */
+        font-size: 20px;
+        font-weight: 600;
+        margin-top: 10px;
+        margin-bottom: 16px;
+        letter-spacing: 0.5px;
+        text-align: center;
+      }
+      /* ทำให้กล่องวาง absolute child ได้ */
+      .gift-box {
+        position: relative;
+        display: inline-block;
       }
 
-      /* เอฟเฟกต์เต้น ๆ */
-      @keyframes pulse {
-        0% {
-          transform: scale(1);
-          opacity: 1;
+      /* สัมผัสเล็ก ๆ ตอนกด (ไม่เด้งแรง) */
+      .gift-box:active {
+        transform: scale(0.98);
+      }
+
+      /* วงแหวน ‘ปุ้ง’ */
+      .gift-pop {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 9999px;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.65),
+          rgba(255, 192, 203, 0.35) 60%,
+          rgba(255, 192, 203, 0) 75%
+        );
+        transform: translate(-50%, -50%);
+        animation: pop-ring 0.6s ease-out forwards;
+        pointer-events: none;
+        will-change: transform, opacity, width, height;
+      }
+      @keyframes pop-ring {
+        from {
+          width: 0;
+          height: 0;
+          opacity: 0.9;
         }
-        50% {
-          transform: scale(1.15);
-          opacity: 0.8;
+        to {
+          width: 220px;
+          height: 220px;
+          opacity: 0;
+        }
+      }
+
+      /* กระดาษคอนเฟตติ (พาสเทล) */
+      .confetti {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 8px;
+        height: 12px;
+        border-radius: 2px;
+        background: currentColor; /* ใช้จาก style.color */
+        transform: translate(-50%, -50%) rotate(0deg);
+        animation: confetti-fall 700ms ease-out forwards;
+        pointer-events: none;
+        will-change: transform, opacity;
+      }
+      @keyframes confetti-fall {
+        0% {
+          opacity: 1;
+          transform: translate(-50%, -50%) translate(0, 0) rotate(0deg);
         }
         100% {
-          transform: scale(1);
-          opacity: 1;
+          opacity: 0;
+          transform: translate(-50%, -50%) translate(var(--dx), var(--dy))
+            rotate(180deg);
         }
+      }
+      .sound-toggle {
+        position: fixed;
+        right: 14px;
+        top: 14px;
+        z-index: 2600;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #fff;
+        border-radius: 999px;
+        padding: 8px 10px;
+        font-size: 16px;
+        backdrop-filter: blur(8px);
+        cursor: pointer;
+      }
+      .sound-toggle[aria-pressed="true"] {
+        /* playing */
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      /* hint เล็กๆ ด้านล่าง */
+      .sound-hint {
+        position: fixed;
+        left: 50%;
+        bottom: 18px;
+        transform: translateX(-50%);
+        z-index: 2600;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-size: 13px;
       }
     </style>
   </head>
@@ -795,19 +881,19 @@
                 ></div>
                 <div
                   class="message-line"
-                  data-text="i’m so thankful i got to meet you."
+                  data-text="i’m so thankful i got to meet you"
                 ></div>
                 <div
                   class="message-line"
-                  data-text="sometimes i still can’t believe i have the chance to know someone like you."
+                  data-text="sometimes i still can’t believe i have the chance to know someone like you"
                 ></div>
                 <div
                   class="message-line"
-                  data-text="you’ve been such a good part of my life, and every day feels a little brighter because you’re there."
+                  data-text="you’ve been such a good part of my life, and every day feels a little brighter because you’re there"
                 ></div>
                 <div
                   class="message-line"
-                  data-text="you make things lighter and happier just by being around."
+                  data-text="you make things lighter and happier just by being around"
                 ></div>
 
                 <div class="message-line" data-text=""></div>
@@ -815,45 +901,45 @@
 
                 <div
                   class="message-line"
-                  data-text="i hope today makes you feel all the love and happiness you truly deserve."
+                  data-text="i hope today makes you feel all the love and happiness you truly deserve"
                 ></div>
                 <div
                   class="message-line"
-                  data-text="you’re such a kind and genuine person, and you always give so much to the people you care about."
+                  data-text="you’re such a kind and genuine person, and you always give so much to the people you care about"
                 ></div>
                 <div
                   class="message-line"
-                  data-text="now it’s your turn to receive that same love back."
+                  data-text="now it’s your turn to receive that same love back"
                 ></div>
                 <div
                   class="message-line"
-                  data-text="you deserve to rest, to smile, and to be surrounded by good energy—today and always."
-                ></div>
-
-                <div class="message-line" data-text=""></div>
-
-                <div
-                  class="message-line"
-                  data-text="i want you to know i’m always proud of you."
-                ></div>
-                <div
-                  class="message-line"
-                  data-text="in everything you do, even when things get tough, i’ll always be cheering you on."
-                ></div>
-                <div
-                  class="message-line"
-                  data-text="you’ve come so far, and i’ll always be here to celebrate your wins and support you on your bad days."
-                ></div>
-                <div
-                  class="message-line"
-                  data-text="you’ll never have to go through anything alone as long as you let me be there."
+                  data-text="you deserve to rest, to smile, and to be surrounded by good energy—today and always"
                 ></div>
 
                 <div class="message-line" data-text=""></div>
 
                 <div
                   class="message-line"
-                  data-text="so happy birthday again! enjoy your day and let yourself feel how special you really are."
+                  data-text="i want you to know i’m always proud of you"
+                ></div>
+                <div
+                  class="message-line"
+                  data-text="in everything you do, even when things get tough, i’ll always be cheering you on"
+                ></div>
+                <div
+                  class="message-line"
+                  data-text="you’ve come so far, and i’ll always be here to celebrate your wins and support you on your bad days"
+                ></div>
+                <div
+                  class="message-line"
+                  data-text="you’ll never have to go through anything alone as long as you let me be there"
+                ></div>
+
+                <div class="message-line" data-text=""></div>
+
+                <div
+                  class="message-line"
+                  data-text="so happy birthday again! enjoy your day and let yourself feel how special you really are"
                 ></div>
                 <div
                   class="message-line"
@@ -862,7 +948,7 @@
                 <!-- ... (บรรทัดอื่น ๆ) ... -->
                 <div
                   class="message-line"
-                  data-text="and… i hope every year on your birthday, i’ll still get to be here with you too."
+                  data-text="and… i hope every year on your birthday, i’ll still get to be here with you too"
                 ></div>
               </div>
             </div>
@@ -881,19 +967,19 @@
             <img src="./photo/No.gif" alt="cute" />
           </div>
           <div class="envelope-question">Do you want a gift? 🥺❤️</div>
-          <p class="envelope-subtext">Come on, answer 😍</p>
+          <p class="envelope-subtext">Come on, answer</p>
           <div class="envelope-buttons">
             <button
               class="envelope-btn yes"
               onclick="handleEnvelopeChoice('yes')"
             >
-              Yes ✨
+              Yes
             </button>
             <button
               class="envelope-btn no"
               onclick="handleEnvelopeChoice('no')"
             >
-              No 💔
+              No
             </button>
           </div>
         </div>
@@ -923,7 +1009,7 @@
           <div class="success-subtitle">thank you ♡</div>
           <div class="success-actions">
             <button type="button" class="success-btn" id="replayFireworksBtn">
-              replay 
+              replay
             </button>
             <button
               type="button"
@@ -959,6 +1045,24 @@
         </div>
       </div>
     </div>
+
+    <!-- BGM -->
+    <audio id="bgm" src="./audio/love_wave.mp3" preload="auto" loop></audio>
+
+    <!-- ปุ่มเสียง มินิมอล -->
+    <!-- <button
+      id="soundToggle"
+      class="sound-toggle"
+      aria-pressed="false"
+      title="Sound"
+    >
+      🔈
+    </button> -->
+
+    <!-- แถบแจ้งเตือนให้แตะเพื่อเปิดเสียง (เผื่อ autoplay fail) -->
+    <!-- <div id="soundHint" class="sound-hint" hidden>
+      Tap anywhere to enable sound
+    </div> -->
 
     <canvas id="fireworksCanvas" class="fireworks"></canvas>
     <div id="fireworksImageWrapper" class="fireworks-image">
@@ -1033,6 +1137,9 @@ and… i hope every year on your birthday, i’ll still get to be here with you 
       letterPaper.addEventListener("click", (e) => e.stopPropagation());
 
       giftBox.addEventListener("click", function () {
+        // เอฟเฟกต์จิ้มกล่อง (แสดงทุกครั้งที่คลิกครั้งแรก)
+        burstAt(giftBox, 22);
+
         if (!isClicked) {
           giftBox.classList.add("fade");
           document.body.classList.add("rome4-bg");
@@ -1330,6 +1437,104 @@ and… i hope every year on your birthday, i’ll still get to be here with you 
           btn.textContent = next ? "ย่อ" : "อ่านต่อ";
         });
       })();
+
+      // เอฟเฟกต์รอบกล่องของขวัญ
+      function burstAt(el, count = 20) {
+        // วงแหวน ‘ปุ้ง’
+        const ring = document.createElement("span");
+        ring.className = "gift-pop";
+        el.appendChild(ring);
+        setTimeout(() => ring.remove(), 650);
+
+        // คอนเฟตติพาสเทล
+        const palette = ["#ff7eb9", "#ffd166", "#9be7ff", "#caffbf", "#bdb2ff"];
+        for (let i = 0; i < count; i++) {
+          const s = document.createElement("span");
+          s.className = "confetti";
+
+          // กระจายรอบ ๆ แบบวงกลม + สุ่มนิดหน่อย
+          const angle = (Math.PI * 2 * i) / count + (Math.random() * 0.6 - 0.3);
+          const dist = 60 + Math.random() * 60;
+          const dx = Math.cos(angle) * dist;
+          const dy = Math.sin(angle) * dist - 10;
+
+          s.style.setProperty("--dx", dx + "px");
+          s.style.setProperty("--dy", dy + "px");
+          s.style.color = palette[i % palette.length];
+
+          el.appendChild(s);
+          setTimeout(() => s.remove(), 750);
+        }
+      }
+      const bgm = document.getElementById("bgm");
+      const soundBtn = document.getElementById("soundToggle");
+      const soundHint = document.getElementById("soundHint");
+
+      // ตั้งค่าระดับเสียงเบาๆ (ปรับได้)
+      bgm.volume = 0.35;
+
+      // 1) พยายามเล่นทันทีตอนโหลด
+      window.addEventListener("DOMContentLoaded", async () => {
+        try {
+          await bgm.play(); // ถ้าอนุญาต จะเล่นเลย
+          soundBtn.setAttribute("aria-pressed", "true");
+          soundBtn.textContent = "🔊";
+        } catch (err) {
+          // โดน policy บล็อค → รอ user gesture
+          soundHint.hidden = false;
+          soundBtn.setAttribute("aria-pressed", "false");
+          soundBtn.textContent = "🔈";
+        }
+      });
+
+      // 2) ถ้าผู้ใช้กดกล่อง 🎁 ครั้งแรก ให้เริ่มเสียงทันที
+      //    (สมมติคุณมีตัวแปร giftBox และ isClicked อยู่แล้ว)
+      document.getElementById("giftBox")?.addEventListener(
+        "click",
+        async () => {
+          if (bgm.paused) {
+            try {
+              await bgm.play();
+              soundBtn.setAttribute("aria-pressed", "true");
+              soundBtn.textContent = "🔊";
+              soundHint.hidden = true;
+            } catch (e) {}
+          }
+        },
+        { once: false }
+      );
+
+      // 3) ปุ่มเปิด/ปิดเสียง
+      soundBtn.addEventListener("click", async () => {
+        if (bgm.paused) {
+          try {
+            await bgm.play();
+            soundBtn.setAttribute("aria-pressed", "true");
+            soundBtn.textContent = "🔊";
+            soundHint.hidden = true;
+          } catch (e) {}
+        } else {
+          bgm.pause();
+          soundBtn.setAttribute("aria-pressed", "false");
+          soundBtn.textContent = "🔈";
+        }
+      });
+
+      // 4) แตะที่ไหนก็ได้เพื่อเปิดเสียง ถ้า hint โผล่
+      document.addEventListener(
+        "pointerdown",
+        async () => {
+          if (!soundHint.hidden && bgm.paused) {
+            try {
+              await bgm.play();
+              soundBtn.setAttribute("aria-pressed", "true");
+              soundBtn.textContent = "🔊";
+              soundHint.hidden = true;
+            } catch (e) {}
+          }
+        },
+        { once: true }
+      );
     </script>
   </body>
 </html>
