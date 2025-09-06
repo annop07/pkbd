@@ -145,15 +145,16 @@
       }
 
       .popup-body {
-        padding: 25px 20px;
-        text-align: center;
-        color: white;
+        display: flex;
+        flex-direction: column;
       }
 
-      .popup-message {
-        font-size: 18px;
-        line-height: 1.8;
-        margin-bottom: 25px;
+      /* ให้กล่องข้อความกินที่แบบยืดหยุ่น แต่ไม่ดันปุ่มหลุด */
+      #popupMessage {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0; /* กัน flex overflow */
       }
 
       .message-line {
@@ -192,6 +193,117 @@
         font-size: 16px;
         font-family: "Kanit", sans-serif;
         transition: all 0.3s ease;
+      }
+
+      /* ให้การ์ด popup จัดแนวเป็นคอลัมน์ และไม่สูงเกินจอ */
+      .popup-card,
+      .popup-content {
+        display: flex;
+        flex-direction: column;
+        max-height: min(86vh, 640px);
+      }
+
+      /* กล่องเลื่อนสำหรับข้อความยาว */
+      #popupMessage {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      /* พื้นที่เลื่อนภายใน */
+      #popupMessage .msg-scroll {
+        flex: 1;
+        min-height: 0;
+        overflow: auto;
+        max-height: 56vh;
+      }
+
+      /* ไล่สีบอกว่าเลื่อนได้ (gradient mask) */
+      #popupMessage .msg-scroll::before,
+      #popupMessage .msg-scroll::after {
+        content: "";
+        position: sticky;
+        left: 0;
+        right: 0;
+        height: 16px;
+        pointer-events: none;
+        z-index: 1;
+      }
+      #popupMessage .msg-scroll::before {
+        top: 0;
+        background: linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.9),
+          rgba(255, 255, 255, 0)
+        );
+      }
+      #popupMessage .msg-scroll::after {
+        bottom: 0;
+        background: linear-gradient(
+          to top,
+          rgba(255, 255, 255, 0.9),
+          rgba(255, 255, 255, 0)
+        );
+      }
+
+      /* สไตล์บรรทัดข้อความให้อ่านง่ายบนมือถือ */
+      #popupMessage .message-line {
+        color: #fff;
+        font-size: 15px;
+        line-height: 1.5;
+        margin: 2px 0;
+        word-break: break-word;
+      }
+
+      /* ปุ่มอ่านต่อ/ย่อ */
+      #popupMessage .msg-toggle {
+        align-self: center;
+        margin-top: 6px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 0;
+        background: #111;
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+      }
+
+      /* โหมดขยาย (เต็มหน้าการ์ด) */
+      .popup-card.expand,
+      .popup-content.expand {
+        max-height: 92vh;
+      }
+      #popupMessage.expand .msg-scroll {
+        max-height: 78vh;
+      }
+      #popupMessage.expanded .msg-scroll {
+        max-height: 64vh;
+      }
+
+      /* (ทางเลือก) ถ้ามี .popup-card หรือ .popup-content */
+      .popup-card.expanded,
+      .popup-content.expanded {
+        max-height: 92vh;
+      }
+
+      /* สกรอลบาร์ (WebKit) */
+      #popupMessage .msg-scroll::-webkit-scrollbar {
+        width: 6px;
+      }
+      #popupMessage .msg-scroll::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.25);
+        border-radius: 6px;
+      }
+
+      /* มือถือเล็กมาก */
+      @media (max-width: 380px) {
+        #popupMessage .message-line {
+          font-size: 14px;
+        }
+        #popupMessage .msg-scroll {
+          max-height: 60vh;
+        }
       }
 
       .popup-close:hover {
@@ -337,6 +449,7 @@
           repeating-linear-gradient(135deg, #fdf3f6 0 12px, #f5f9ff 12px 24px);
         border-radius: 14px;
         transform: translateZ(-1px);
+        z-index: 1;
       }
       #letterEnvelope .env-front {
         position: absolute;
@@ -345,6 +458,7 @@
         border-bottom-left-radius: 14px;
         border-bottom-right-radius: 14px;
         box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.04);
+        z-index: 3;
       }
       #letterEnvelope .env-front::before,
       #letterEnvelope .env-front::after {
@@ -379,6 +493,7 @@
           box-shadow 0.3s ease;
         border-top-left-radius: 14px;
         border-top-right-radius: 14px;
+        z-index: 5;
       }
       #letterEnvelope .env-stamp {
         position: absolute;
@@ -397,6 +512,7 @@
         text-align: center;
         font-size: 18px;
         user-select: none;
+        z-index: 5;
       }
       #letterEnvelope::after {
         content: "";
@@ -445,7 +561,7 @@
         left: 50%;
         bottom: 8%;
         transform: translate(-50%, 75%); /* เริ่มซ่อนอยู่ในซอง */
-        width: min(88vw, 340px);
+        width: calc(100% - 28px);
         max-height: 70vh; /* อ่านในมือถือสบาย */
         background: #fffdf8;
         background-image: linear-gradient(
@@ -465,7 +581,7 @@
         transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1),
           box-shadow 0.3s ease;
         will-change: transform;
-        z-index: 15; /* อยู่เหนือซอง */
+        z-index: 2; /* อยู่เหนือซอง */
       }
       #letterPaper .paper-notch {
         width: 52px;
@@ -490,6 +606,7 @@
         transform: translate(-50%, -6%); /* โผล่พ้นปากซอง */
         box-shadow: 0 18px 36px rgba(0, 0, 0, 0.24),
           inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+        z-index: 4;
       }
 
       /* ปรับเล็กน้อยสำหรับจอเล็กมาก */
@@ -501,13 +618,161 @@
           font-size: 15px;
         }
       }
+      /* ==== Fireworks overlay ==== */
+      .fireworks {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 3000; /* อยู่บนสุด */
+        pointer-events: none; /* ไม่บังการคลิก */
+        display: none; /* เริ่มต้นซ่อน */
+      }
+      .fireworks.show {
+        display: block;
+      }
+
+      /* ==== Success Overlay (หลังพลุ) ==== */
+      .success-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 3200;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(
+          ellipse at center,
+          rgba(0, 0, 0, 0.55),
+          rgba(0, 0, 0, 0.75)
+        );
+        backdrop-filter: blur(2px);
+      }
+
+      .success-overlay.show {
+        display: flex;
+      }
+
+      .success-card {
+        width: min(90vw, 360px);
+        border-radius: 16px;
+        padding: 24px 18px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+        color: #fff;
+        text-align: center;
+      }
+
+      .success-title {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+
+      .success-subtitle {
+        font-size: 15px;
+        opacity: 0.9;
+        margin-bottom: 16px;
+      }
+
+      .success-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+      }
+
+      .success-btn {
+        appearance: none;
+        border: 0;
+        padding: 10px 14px;
+        border-radius: 999px;
+        font-weight: 700;
+        cursor: pointer;
+        color: #111;
+        background: #fff;
+      }
+
+      .success-btn.ghost {
+        background: transparent;
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.6);
+      }
+      /* ==== Fireworks Image ==== */
+      .fireworks-image {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 3100; /* อยู่เหนือ canvas แต่ต่ำกว่า success overlay */
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.8s ease;
+      }
+
+      .fireworks-image img {
+        width: 180px;
+        max-width: 60vw;
+        height: auto;
+      }
+
+      /* เมื่อโชว์ */
+      .fireworks-image.show {
+        opacity: 1;
+      }
+      /* ==== ข้อความใต้รูปเค้ก ==== */
+      .fireworks-caption {
+        margin-top: 10px;
+        font-size: 18px;
+        font-weight: 600;
+        color: #fff;
+        text-align: center;
+        text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 0.8s ease, transform 0.8s ease;
+      }
+
+      .fireworks-image.show .fireworks-caption {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .click-text {
+        color: #fff;
+        font-size: 22px;
+        font-weight: 700;
+        margin-top: 12px;
+        margin-bottom: 18px;
+        text-shadow: 0 0 8px rgba(255, 255, 255, 0.8),
+          0 0 15px rgba(255, 215, 0, 0.9);
+        animation: pulse 1.5s infinite;
+      }
+
+      /* เอฟเฟกต์เต้น ๆ */
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.15);
+          opacity: 0.8;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
     </style>
   </head>
   <body>
     <div class="container">
       <div class="gift-box" id="giftBox" style="font-size: 200px">🎁</div>
+
+      <!-- ข้อความ Click 🎁 Please !!! -->
+      <p class="click-text">Click 🎁 Please !!!</p>
+
       <div style="color: white; font-size: 24px; margin-bottom: 20px">
-        Happy Birthday! 🎉
+        Happy Birthday to PK ◕‿◕｡
       </div>
 
       <!-- Popup Birthday Message -->
@@ -522,36 +787,86 @@
           </div>
           <div class="popup-body">
             <div class="popup-message" id="popupMessage">
-              <div
-                class="message-line"
-                data-text="วันนี้เป็นวันพิเศษของเธอ"
-              ></div>
-              <div class="message-line" data-text="ขอให้เธอมีความสุขมากๆ"></div>
-              <div class="message-line" data-text="สุขภาพแข็งแรง"></div>
-              <div
-                class="message-line"
-                data-text="ได้สิ่งที่หวังทุกอย่าง"
-              ></div>
-              <div
-                class="message-line"
-                data-text="และขอให้รอยยิ้มอยู่กับเธอตลอดไป"
-              ></div>
-              <div
-                class="message-line"
-                data-text="ขอให้ปีใหม่ของชีวิต"
-                style="margin-top: 15px"
-              ></div>
-              <div
-                class="message-line"
-                data-text="เต็มไปด้วยความรัก ความสุข"
-              ></div>
-              <div class="message-line" data-text="และความสำเร็จ"></div>
-              <div
-                class="message-line"
-                data-text="🎂✨ Happy Birthday! ✨🎂"
-                style="margin-top: 15px; font-size: 20px"
-              ></div>
+              <div class="msg-scroll">
+                <!-- บรรทัดข้อความของคุณทั้งหมด -->
+                <div
+                  class="message-line"
+                  data-text="happy birthday, you ♡"
+                ></div>
+                <div
+                  class="message-line"
+                  data-text="i’m so thankful i got to meet you."
+                ></div>
+                <div
+                  class="message-line"
+                  data-text="sometimes i still can’t believe i have the chance to know someone like you."
+                ></div>
+                <div
+                  class="message-line"
+                  data-text="you’ve been such a good part of my life, and every day feels a little brighter because you’re there."
+                ></div>
+                <div
+                  class="message-line"
+                  data-text="you make things lighter and happier just by being around."
+                ></div>
+
+                <div class="message-line" data-text=""></div>
+                <!-- เว้นบรรทัด -->
+
+                <div
+                  class="message-line"
+                  data-text="i hope today makes you feel all the love and happiness you truly deserve."
+                ></div>
+                <div
+                  class="message-line"
+                  data-text="you’re such a kind and genuine person, and you always give so much to the people you care about."
+                ></div>
+                <div
+                  class="message-line"
+                  data-text="now it’s your turn to receive that same love back."
+                ></div>
+                <div
+                  class="message-line"
+                  data-text="you deserve to rest, to smile, and to be surrounded by good energy—today and always."
+                ></div>
+
+                <div class="message-line" data-text=""></div>
+
+                <div
+                  class="message-line"
+                  data-text="i want you to know i’m always proud of you."
+                ></div>
+                <div
+                  class="message-line"
+                  data-text="in everything you do, even when things get tough, i’ll always be cheering you on."
+                ></div>
+                <div
+                  class="message-line"
+                  data-text="you’ve come so far, and i’ll always be here to celebrate your wins and support you on your bad days."
+                ></div>
+                <div
+                  class="message-line"
+                  data-text="you’ll never have to go through anything alone as long as you let me be there."
+                ></div>
+
+                <div class="message-line" data-text=""></div>
+
+                <div
+                  class="message-line"
+                  data-text="so happy birthday again! enjoy your day and let yourself feel how special you really are."
+                ></div>
+                <div
+                  class="message-line"
+                  data-text="i appreciate you so much, and i’ll always be here rooting for you :3"
+                ></div>
+                <!-- ... (บรรทัดอื่น ๆ) ... -->
+                <div
+                  class="message-line"
+                  data-text="and… i hope every year on your birthday, i’ll still get to be here with you too."
+                ></div>
+              </div>
             </div>
+
             <button class="popup-close" onclick="showEnvelopePopup()">
               เปิด 💌
             </button>
@@ -601,24 +916,58 @@
         </div>
       </div>
 
+      <!-- Success Overlay -->
+      <div id="successOverlay" class="success-overlay">
+        <div class="success-card">
+          <div class="success-title">Happy Birthday again dekk</div>
+          <div class="success-subtitle">thank you ♡</div>
+          <div class="success-actions">
+            <button type="button" class="success-btn" id="replayFireworksBtn">
+              replay 
+            </button>
+            <button
+              type="button"
+              class="success-btn ghost"
+              id="closeSuccessBtn"
+            >
+              close
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- Letter Overlay -->
       <div id="letterOverlay" class="letter-overlay">
-        <!-- ซอง -->
         <div id="letterEnvelope">
           <div class="env-liner"></div>
+
+          <!-- กระดาษอยู่ในซอง -->
+          <div
+            class="letter-paper"
+            id="letterPaper"
+            aria-label="Letter content"
+          >
+            <div class="paper-notch"></div>
+            <div class="paper-content">
+              <p id="letterText"></p>
+            </div>
+          </div>
+
           <div class="env-front"></div>
           <div class="env-flap"></div>
           <div class="env-stamp">♡</div>
         </div>
-
-        <!-- กระดาษที่จะเลื่อนขึ้น -->
-        <div class="letter-paper" id="letterPaper" aria-label="Letter content">
-          <div class="paper-notch"></div>
-          <div class="paper-content">
-            <p id="letterText"></p>
-          </div>
-        </div>
       </div>
+    </div>
+
+    <canvas id="fireworksCanvas" class="fireworks"></canvas>
+    <div id="fireworksImageWrapper" class="fireworks-image">
+      <img
+        id="fireworksImage"
+        src="./photo/cake-birthday-cake.gif"
+        alt="Celebration"
+      />
+      <p class="fireworks-caption">Blow the cake!</p>
     </div>
 
     <script>
@@ -629,6 +978,15 @@
       const letterOverlay = document.getElementById("letterOverlay");
       const letterEnvelope = document.getElementById("letterEnvelope");
       const letterPaper = document.getElementById("letterPaper");
+
+      function setLetterMessage(message) {
+        const p = document.getElementById("letterText");
+        if (!p) return;
+        // แปลง \n ให้ขึ้นบรรทัดใหม่ใน HTML
+        p.innerHTML = String(message || "")
+          .trim()
+          .replace(/\n/g, "<br>");
+      }
 
       function revealPaper() {
         letterPaper.classList.add("up");
@@ -641,10 +999,22 @@
         letterOverlay.classList.add("show");
         setTimeout(() => {
           letterEnvelope.classList.add("open"); // เปิดฝาซอง
-          letterEnvelope.addEventListener("click", revealPaper, { once: true }); // แตะซอง → ดึงกระดาษ
+          // ถ้ายังอยากให้ “แตะซองแล้วกระดาษเลื่อนขึ้น”
+          letterEnvelope.addEventListener("click", revealPaper, { once: true });
 
-          // เริ่มไทป์ข้อความลง #letterText (ของคุณเดิม)
-          typeLetterMessage("...your long message...");
+          // ✅ แสดงข้อความทั้งหมดทันที (ไม่ไทป์ช้าๆ)
+          setLetterMessage(
+            `happy birthday, you ♡
+
+i’m so thankful i got to meet you. sometimes i still can’t believe i have the chance to know someone like you. you’ve been such a good part of my life, and every day feels a little brighter because you’re there. you make things lighter and happier just by being around.
+
+i hope today makes you feel all the love and happiness you truly deserve. you’re such a kind and genuine person, and you always give so much to the people you care about. now it’s your turn to receive that same love back. you deserve to rest, to smile, and to be surrounded by good energy—today and always.
+
+i want you to know i’m always proud of you. in everything you do, even when things get tough, i’ll always be cheering you on. you’ve come so far, and i’ll always be here to celebrate your wins and support you on your bad days. you’ll never have to go through anything alone as long as you let me be there.
+
+so happy birthday again! enjoy your day and let yourself feel how special you really are. i appreciate you so much, and i’ll always be here rooting for you :3
+and… i hope every year on your birthday, i’ll still get to be here with you too.` // ← จัดย่อหน้าได้ด้วย \n
+          );
         }, 300);
       }
 
@@ -657,9 +1027,8 @@
 
       // คลิกพื้นหลังเพื่อปิด (กันไม่ให้คลิกที่กระดาษแล้วปิด)
       letterOverlay.addEventListener("click", (e) => {
-        if (e.target === letterOverlay) closeLetterOverlay();
+        if (e.target === letterOverlay) closeLetterOverlay(); // คลิกพื้นหลังจริงๆ ถึงปิด
       });
-      // กัน bubbling จากการคลิกที่ซอง/กระดาษ
       letterEnvelope.addEventListener("click", (e) => e.stopPropagation());
       letterPaper.addEventListener("click", (e) => e.stopPropagation());
 
@@ -676,41 +1045,11 @@
       });
 
       function startTypewriterEffect() {
-        const messageLines = document.querySelectorAll(".message-line");
-        let currentLine = 0;
+        const lines = document.querySelectorAll(".message-line");
 
-        function typeNextLine() {
-          if (currentLine < messageLines.length) {
-            const line = messageLines[currentLine];
-            const text = line.getAttribute("data-text");
-            line.innerHTML = "";
-
-            const cursor = document.createElement("span");
-            cursor.className = "typewriter-cursor";
-            line.appendChild(cursor);
-
-            let charIndex = 0;
-
-            function typeChar() {
-              if (charIndex < text.length) {
-                line.insertBefore(
-                  document.createTextNode(text[charIndex]),
-                  cursor
-                );
-                charIndex++;
-                setTimeout(typeChar, 80);
-              } else {
-                cursor.remove();
-                currentLine++;
-                setTimeout(typeNextLine, 500);
-              }
-            }
-
-            typeChar();
-          }
-        }
-
-        setTimeout(typeNextLine, 1000);
+        lines.forEach((line) => {
+          line.textContent = line.getAttribute("data-text");
+        });
       }
 
       function showEnvelopePopup() {
@@ -722,10 +1061,25 @@
         envelopePopup.classList.remove("show");
 
         if (choice === "yes") {
-          setTimeout(() => {
+          setTimeout(async () => {
             closePopup();
-            openLetter();
-          }, 500);
+            closeLetterOverlay();
+            setLetterMessage("");
+            document.getElementById("letterOverlay")?.remove();
+
+            // ==== โชว์รูปพร้อมกับเล่นพลุ ====
+            const imgWrapper = document.getElementById("fireworksImageWrapper");
+            imgWrapper.classList.add("show");
+
+            // เล่นพลุ 7 วินาที
+            await startFireworks(7000);
+
+            // ซ่อนรูปทันทีเมื่อพลุจบ
+            imgWrapper.classList.remove("show");
+
+            // แสดง success overlay
+            document.getElementById("successOverlay")?.classList.add("show");
+          }, 400);
         } else {
           setTimeout(() => {
             document.getElementById("blessingPopup").classList.add("show");
@@ -752,21 +1106,6 @@
         }, 300);
       }
 
-      function openLetter() {
-        const overlay = document.getElementById("letterOverlay");
-        const envelope = document.getElementById("letterEnvelope");
-        overlay.classList.add("show");
-        setTimeout(() => {
-          envelope.classList.add("open");
-          typeLetterMessage(
-            "ขอบคุณที่ตอบรับของขวัญนะ ขอให้วันนี้เต็มไปด้วยรอยยิ้มและความรัก ❤"
-          );
-        }, 300);
-        overlay.addEventListener("click", () =>
-          overlay.classList.remove("show")
-        );
-      }
-
       function typeLetterMessage(message) {
         const target = document.getElementById("letterText");
         target.textContent = "";
@@ -780,6 +1119,217 @@
         }
         setTimeout(type, 900);
       }
+
+      (function setupFireworks() {
+        const canvas = document.getElementById("fireworksCanvas");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+
+        let W,
+          H,
+          rafId = null;
+        let rockets = [];
+        let particles = [];
+        let running = false;
+
+        function resize() {
+          W = canvas.width = window.innerWidth;
+          H = canvas.height = window.innerHeight;
+        }
+        window.addEventListener("resize", resize);
+        resize();
+
+        class Rocket {
+          constructor() {
+            this.x = Math.random() * W;
+            this.y = H + 10;
+            this.vx = (Math.random() - 0.5) * 1.2;
+            this.vy = -(7 + Math.random() * 3);
+            this.color = `hsl(${Math.floor(Math.random() * 360)},100%,60%)`;
+            this.exploded = false;
+            this.targetY = 100 + Math.random() * (H * 0.5);
+          }
+          update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            this.vy += 0.02;
+            if (this.y <= this.targetY || this.vy >= -1) {
+              this.explode();
+            }
+          }
+          explode() {
+            if (this.exploded) return;
+            this.exploded = true;
+            const count = 60 + Math.floor(Math.random() * 40);
+            for (let i = 0; i < count; i++) {
+              const angle = (Math.PI * 2 * i) / count;
+              const speed = 2 + Math.random() * 3.5;
+              particles.push(
+                new Particle(
+                  this.x,
+                  this.y,
+                  Math.cos(angle) * speed,
+                  Math.sin(angle) * speed,
+                  this.color
+                )
+              );
+            }
+          }
+          draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+          }
+        }
+
+        class Particle {
+          constructor(x, y, vx, vy, color) {
+            this.x = x;
+            this.y = y;
+            this.vx = vx;
+            this.vy = vy;
+            this.life = 1;
+            this.decay = 0.012 + Math.random() * 0.02;
+            this.color = color;
+            this.size = 2 + Math.random() * 2;
+            this.gravity = 0.03 + Math.random() * 0.03;
+          }
+          update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            this.vy += this.gravity;
+            this.vx *= 0.985;
+            this.vy *= 0.985;
+            this.life -= this.decay;
+          }
+          draw() {
+            if (this.life <= 0) return;
+            ctx.globalAlpha = Math.max(this.life, 0);
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+          }
+        }
+
+        function spawnRockets(n = 3) {
+          for (let i = 0; i < n; i++) rockets.push(new Rocket());
+        }
+
+        function loop() {
+          ctx.globalCompositeOperation = "source-over";
+          ctx.fillStyle = "rgba(0,0,0,0.2)";
+          ctx.fillRect(0, 0, W, H);
+          ctx.globalCompositeOperation = "lighter";
+
+          for (let i = rockets.length - 1; i >= 0; i--) {
+            const r = rockets[i];
+            if (!r.exploded) r.update();
+            r.draw();
+            if (r.exploded) rockets.splice(i, 1);
+          }
+
+          for (let i = particles.length - 1; i >= 0; i--) {
+            const p = particles[i];
+            p.update();
+            p.draw();
+            if (p.life <= 0) particles.splice(i, 1);
+          }
+
+          if (Math.random() < 0.04) spawnRockets(1);
+          rafId = requestAnimationFrame(loop);
+        }
+
+        function start(durationMs = 6000) {
+          return new Promise((resolve) => {
+            if (running) {
+              resolve();
+              return;
+            }
+            running = true;
+            canvas.classList.add("show");
+            spawnRockets(4);
+            loop();
+            setTimeout(() => {
+              stop();
+              resolve();
+            }, durationMs);
+          });
+        }
+
+        function stop() {
+          if (!running) return;
+          running = false;
+          cancelAnimationFrame(rafId);
+          rafId = null;
+          rockets = [];
+          particles = [];
+          ctx.clearRect(0, 0, W, H);
+          canvas.classList.remove("show");
+        }
+
+        window.startFireworks = start;
+        window.stopFireworks = stop;
+      })();
+
+      // Success overlay buttons
+      (function setupSuccessOverlayControls() {
+        const overlay = document.getElementById("successOverlay");
+        const replayBtn = document.getElementById("replayFireworksBtn");
+        const closeBtn = document.getElementById("closeSuccessBtn");
+        if (replayBtn) {
+          replayBtn.addEventListener("click", async () => {
+            overlay.classList.remove("show");
+            await startFireworks(6000);
+            overlay.classList.add("show");
+          });
+        }
+        if (closeBtn) {
+          closeBtn.addEventListener("click", () => {
+            overlay.classList.remove("show");
+          });
+        }
+      })();
+
+      // ปุ่มอ่านต่อ/ย่อ: toggle สูงสุดของการ์ด
+      (function setupExpandToggle() {
+        const btn = document.getElementById("msgToggleBtn");
+        const popupMessage = document.getElementById("popupMessage");
+        if (!btn || !popupMessage) return;
+
+        // หา container ที่เป็นการ์ด ถ้ามี
+        const card =
+          popupMessage.closest(".popup-card") ||
+          popupMessage.closest(".popup-content") ||
+          document.querySelector(".popup-card") ||
+          document.querySelector(".popup-content");
+
+        // หา scroller โดยตรง (ใช้เป็น fallback ได้)
+        const scroller = popupMessage.querySelector(".msg-scroll");
+
+        btn.addEventListener("click", () => {
+          const expanded = btn.getAttribute("aria-expanded") === "true";
+          const next = !expanded;
+
+          // toggle class ที่เรา control เองแน่นอน
+          popupMessage.classList.toggle("expand", next);
+          if (card) card.classList.toggle("expand", next);
+
+          // เผื่อไม่มี CSS class ครอบ (fallback): ปรับ style โดยตรง
+          if (scroller) {
+            if (next) {
+              scroller.style.maxHeight = "78vh";
+            } else {
+              scroller.style.maxHeight = ""; // กลับไปใช้ค่าจาก CSS ปกติ (เช่น 56vh)
+            }
+          }
+
+          btn.setAttribute("aria-expanded", String(next));
+          btn.textContent = next ? "ย่อ" : "อ่านต่อ";
+        });
+      })();
     </script>
   </body>
 </html>
